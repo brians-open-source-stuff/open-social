@@ -20,9 +20,9 @@ import { useActionState, useEffect } from "react"
 import signupAction from "./signup-action"
 import { formErrorType, signupFormState } from "@/types";
 
-function Label({children, status}: { children: Readonly<React.ReactNode>, status: formErrorType }) {
+function Label({ children, status }: { children: Readonly<React.ReactNode>, status: formErrorType }) {
   return (
-     <span>
+    <span>
       {children}
       &nbsp;
       {status && <span className="text-red-500">{status.errors}</span>}
@@ -33,7 +33,7 @@ function Label({children, status}: { children: Readonly<React.ReactNode>, status
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   const [formState, formAction, pending] = useActionState(signupAction, {} as signupFormState);
 
-  useEffect(function() {
+  useEffect(function () {
     console.log("formState", formState);
   }, [formState]);
 

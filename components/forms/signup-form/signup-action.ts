@@ -1,22 +1,22 @@
 "use server";
 
 import prisma from "@/config/prisma";
-import { formContentType } from "@/types";
+import { signupFormState } from "@/types";
 import z from "zod";
 
 const signupSchema = z.object({
 	email: z.email(),
 	password: z.string().min(8, { message: "Password must be at least 8 characters long" }),
-  confirmPassword: z.string(),
+	confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords must match",
-  path: ["confirmPassword"],
+	message: "Passwords must match",
+	path: ["confirmPassword"],
 });
 
-export default async function signupAction(prevState: formContentType, formData: FormData) {
+export default async function signupAction(prevState: signupFormState, formData: FormData) {
 	const { email, password, confirmPassword } = Object.fromEntries(formData);
 
-	const validated = signupSchema.safeParse({email, password, confirmPassword});
+	const validated = signupSchema.safeParse({ email, password, confirmPassword });
 
 	if (!validated.success) {
 		return {
@@ -31,9 +31,15 @@ export default async function signupAction(prevState: formContentType, formData:
 			data: {
 				email: validated.data.email,
 				password: validated.data.password,
-			}
+				profile: {
+					create: {
+						firstname: "",
+						lastname: "",
+						sex: "male",
+					},
+				},
+			},
 		});
-		console.log(user);
 		return {};
 	} catch (error) {
 		console.error(error);

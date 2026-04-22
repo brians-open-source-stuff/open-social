@@ -39,9 +39,11 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
+                  id="email"
                   name="email"
                   type="email"
                   placeholder="your@email.com"
+                  autoComplete="email"
                   required
                 />
               </Field>
@@ -55,7 +57,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                     Forgot your password?
                   </Link>
                 </div>
-                <Input name="password" type="password" placeholder="••••••••" required />
+                <Input name="password" type="password" id="password" autoComplete="current-password" placeholder="••••••••" required />
               </Field>
               {formState.errors && <span className="text-red-500">{formState.errors}</span>}
               <Field>

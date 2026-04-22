@@ -13,27 +13,46 @@ export async function encrypt(payload: any) {
 		.sign(encodedKey);
 }
 
-export async function decrypt(session: string | undefined = "") {
+type SessionPayload = {
+	userId: string;
+};
+
+function isSessionPayload(payload: unknown): payload is SessionPayload {
+	return (
+		typeof payload === "object" &&
+		payload !== null &&
+		"userId" in payload &&
+		typeof (payload as { userId: unknown }).userId === "string"
+	);
+}
+
+export async function decrypt(session: string | undefined = ""): Promise<SessionPayload | null> {
 	try {
 		const { payload } = await jwtVerify(session, encodedKey, {
 			algorithms: ["HS256"],
 		});
+
+		if (!isSessionPayload(payload)) {
+			return null;
+		}
+
 		return payload;
 	} catch (error) {
 		console.error("Failed to verify the session");
+		return null;
 	}
 }
 
 export async function createSession(userId: string) {
-	 const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-	 const session = await encrypt({ userId, expiresAt })
-	 const cookieStore = await cookies();
+	const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+	const session = await encrypt({ userId, expiresAt })
+	const cookieStore = await cookies();
 
-	 cookieStore.set("os_session", session, {
+	cookieStore.set("os_session", session, {
 		httpOnly: true,
 		secure: true,
 		expires: expiresAt,
 		sameSite: "lax",
 		path: "/",
-	 });
+	});
 }
